@@ -2,6 +2,10 @@
 
 This time I prompted for some software development documenation before allow it to generate any code. This is testing if the implementation is less buggy then other testing... once again free version, not sharing my own code.
 
+Much better! --> https://j23414.github.io/basic_webgl/
+Although will see if this gets worse as the scene is more complicated, or adds interactive features...
+Well horizontal rotation slightly flipped, should check with a mouse...
+
 ----
 
 # Basic WebGL Project - Software Development Documentation
