@@ -6,6 +6,8 @@ Much better! --> https://j23414.github.io/basic_webgl/
 Although will see if this gets worse as the scene is more complicated, or adds interactive features...
 Well horizontal rotation slightly flipped, should check with a mouse...
 
+Initial reading to debug iphone touch support: https://discussions.unity.com/t/weird-touch-input-behavior-in-webgl-mobile-browsers/1519705
+
 ----
 
 # Basic WebGL Project - Software Development Documentation
