@@ -439,7 +439,7 @@ canvas.addEventListener('mousemove', (e) => {
     const deltaX = e.clientX - lastMouseX;
     const deltaY = e.clientY - lastMouseY;
 
-    rotationY += deltaX * 0.01;
+    rotationY -= deltaX * 0.01;
     rotationX += deltaY * 0.01;
 
     // Clamp vertical rotation
