@@ -427,6 +427,7 @@ function render() {
 
 // ===== INTERACTION =====
 
+// Mouse events
 canvas.addEventListener('mousedown', (e) => {
     isDragging = true;
     lastMouseX = e.clientX;
@@ -456,6 +457,45 @@ canvas.addEventListener('mouseup', () => {
 });
 
 canvas.addEventListener('mouseleave', () => {
+    isDragging = false;
+});
+
+// Touch events for mobile
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (e.touches.length === 1) {
+        isDragging = true;
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+    }
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (!isDragging || e.touches.length !== 1) return;
+
+    const deltaX = e.touches[0].clientX - lastMouseX;
+    const deltaY = e.touches[0].clientY - lastMouseY;
+
+    rotationY += deltaX * 0.01;
+    rotationX += deltaY * 0.01;
+
+    // Clamp vertical rotation
+    rotationX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotationX));
+
+    lastMouseX = e.touches[0].clientX;
+    lastMouseY = e.touches[0].clientY;
+
+    render();
+});
+
+canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    isDragging = false;
+});
+
+canvas.addEventListener('touchcancel', (e) => {
+    e.preventDefault();
     isDragging = false;
 });
 
