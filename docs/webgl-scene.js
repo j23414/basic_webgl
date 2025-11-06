@@ -133,90 +133,11 @@ const helperProgram = createProgram(helperVertexShaderSource, helperFragmentShad
 
 // ===== CUBE GEOMETRY =====
 
-const cubeVertices = new Float32Array([
-    // Front face
-    -1.0, -1.0,  1.0,
-     1.0, -1.0,  1.0,
-     1.0,  1.0,  1.0,
-    -1.0,  1.0,  1.0,
-
-    // Back face
-    -1.0, -1.0, -1.0,
-    -1.0,  1.0, -1.0,
-     1.0,  1.0, -1.0,
-     1.0, -1.0, -1.0,
-
-    // Top face
-    -1.0,  1.0, -1.0,
-    -1.0,  1.0,  1.0,
-     1.0,  1.0,  1.0,
-     1.0,  1.0, -1.0,
-
-    // Bottom face
-    -1.0, -1.0, -1.0,
-     1.0, -1.0, -1.0,
-     1.0, -1.0,  1.0,
-    -1.0, -1.0,  1.0,
-
-    // Right face
-     1.0, -1.0, -1.0,
-     1.0,  1.0, -1.0,
-     1.0,  1.0,  1.0,
-     1.0, -1.0,  1.0,
-
-    // Left face
-    -1.0, -1.0, -1.0,
-    -1.0, -1.0,  1.0,
-    -1.0,  1.0,  1.0,
-    -1.0,  1.0, -1.0
-]);
-
-const cubeNormals = new Float32Array([
-    // Front face
-    0.0,  0.0,  1.0,
-    0.0,  0.0,  1.0,
-    0.0,  0.0,  1.0,
-    0.0,  0.0,  1.0,
-
-    // Back face
-    0.0,  0.0, -1.0,
-    0.0,  0.0, -1.0,
-    0.0,  0.0, -1.0,
-    0.0,  0.0, -1.0,
-
-    // Top face
-    0.0,  1.0,  0.0,
-    0.0,  1.0,  0.0,
-    0.0,  1.0,  0.0,
-    0.0,  1.0,  0.0,
-
-    // Bottom face
-    0.0, -1.0,  0.0,
-    0.0, -1.0,  0.0,
-    0.0, -1.0,  0.0,
-    0.0, -1.0,  0.0,
-
-    // Right face
-    1.0,  0.0,  0.0,
-    1.0,  0.0,  0.0,
-    1.0,  0.0,  0.0,
-    1.0,  0.0,  0.0,
-
-    // Left face
-    -1.0,  0.0,  0.0,
-    -1.0,  0.0,  0.0,
-    -1.0,  0.0,  0.0,
-    -1.0,  0.0,  0.0
-]);
-
-const cubeIndices = new Uint16Array([
-    0,  1,  2,    0,  2,  3,    // Front
-    4,  5,  6,    4,  6,  7,    // Back
-    8,  9,  10,   8,  10, 11,   // Top
-    12, 13, 14,   12, 14, 15,   // Bottom
-    16, 17, 18,   16, 18, 19,   // Right
-    20, 21, 22,   20, 22, 23    // Left
-]);
+// Get cube geometry from geometries.js
+const cubeGeometry = createCube(1.0);
+const cubeVertices = cubeGeometry.vertices;
+const cubeNormals = cubeGeometry.normals;
+const cubeIndices = cubeGeometry.indices;
 
 // Create buffers for cube
 const cubeVertexBuffer = gl.createBuffer();
