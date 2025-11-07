@@ -8,6 +8,15 @@ Well horizontal rotation slightly flipped, should check with a mouse...
 
 Initial reading to debug iphone touch support: https://discussions.unity.com/t/weird-touch-input-behavior-in-webgl-mobile-browsers/1519705
 
+**Local Testing**
+
+```
+cd docs
+python3 -m http.server 8080
+```
+
+* http://localhost:8080/
+
 ----
 
 # Basic WebGL Project - Software Development Documentation
