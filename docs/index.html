@@ -16,10 +16,21 @@
 
         <div class="controls">
             <button id="reset-camera">Reset Camera</button>
+            <select id="view-mode">
+                <option value="protein">View: Protein</option>
+                <option value="cubes">View: Cubes</option>
+            </select>
+            <select id="protein-selector">
+                <option value="1CRN">Crambin (46 res)</option>
+                <option value="1L2Y">Trp-cage (20 res)</option>
+                <option value="1UBQ">Ubiquitin (76 res)</option>
+                <option value="2DHB">Deoxyhemoglobin (146 res)</option>
+            </select>
         </div>
     </div>
 
     <script src="geometries.js"></script>
+    <script src="pdb-loader.js"></script>
     <script src="webgl-scene.js"></script>
 </body>
 </html>
