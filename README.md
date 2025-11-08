@@ -17,6 +17,12 @@ python3 -m http.server 8080
 
 * http://localhost:8080/
 
+**PDB structure viewer**
+
+* Perhaps use a lighter background or use lighter color scale
+* Look into shaders and materials
+* Looks like we're rotating the camera instead of the object, notice how light source is fixed relative to the structure
+* Read about trp-cage ([Barua et al, 2011](https://pmc.ncbi.nlm.nih.gov/articles/PMC3166533/))
 ----
 
 # Basic WebGL Project - Software Development Documentation
