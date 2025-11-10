@@ -516,6 +516,7 @@ function renderAxis(projectionMatrix, viewMatrix) {
 
 // ===== INTERACTION =====
 
+// Mouse events
 canvas.addEventListener('mousedown', (e) => {
     isDragging = true;
     lastMouseX = e.clientX;
@@ -528,7 +529,7 @@ canvas.addEventListener('mousemove', (e) => {
     const deltaX = e.clientX - lastMouseX;
     const deltaY = e.clientY - lastMouseY;
 
-    rotationY -= deltaX * 0.01;
+    rotationY -= deltaX * 0.01; // Reversed for intuitive rotation
     rotationX += deltaY * 0.01;
 
     // Clamp vertical rotation
