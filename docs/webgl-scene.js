@@ -295,7 +295,7 @@ let sphereGeometry = null;
 let sphereVertexCount = 0;
 
 function initSphereGeometry() {
-    sphereGeometry = createSphere(1.0, 10, 10);
+    sphereGeometry = createSphere(1.0, 6, 6);
     sphereVertexCount = sphereGeometry.indices.length;
 }
 
