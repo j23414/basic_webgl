@@ -34,7 +34,7 @@ let currentCameraDistance = 25.0; // Start with protein camera distance
 let proteinData = null;
 let proteinGeometry = null;
 let proteinLoaded = false;
-const proteinScale = 2; // Scale factor to make proteins more visible (Angstroms to world units)
+const proteinScale = 0.25; // Scale factor to make proteins more visible (Angstroms to world units)
 
 // ===== SHADER SOURCES =====
 
@@ -631,4 +631,4 @@ initSphereGeometry();
 animate();
 
 // Load default protein on startup (after render loop starts)
-loadProteinStructure('1CRN');
+loadProteinStructure('5IYN');
