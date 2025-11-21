@@ -320,6 +320,8 @@ function render() {
     // Render based on view mode
     if (viewMode === 'protein' && proteinLoaded) {
         renderProtein(projectionMatrix, viewMatrix);
+    } else if (viewMode === 'backbone' && backboneGeometry) {
+        renderBackbone(projectionMatrix, viewMatrix);
     } else {
         renderCubes(projectionMatrix, viewMatrix);
     }
@@ -473,6 +475,65 @@ function renderBonds(projectionMatrix, viewMatrix) {
     gl.deleteBuffer(bondBuffer);
 }
 
+function renderBackbone(projectionMatrix, viewMatrix) {
+    if (!backboneGeometry) return;
+
+    gl.useProgram(helperProgram);
+
+    const helperPositionLoc = gl.getAttribLocation(helperProgram, 'aPosition');
+    const helperViewMatrixLoc = gl.getUniformLocation(helperProgram, 'uViewMatrix');
+    const helperProjectionMatrixLoc = gl.getUniformLocation(helperProgram, 'uProjectionMatrix');
+    const helperColorLoc = gl.getUniformLocation(helperProgram, 'uColor');
+
+    gl.uniformMatrix4fv(helperProjectionMatrixLoc, false, projectionMatrix);
+    gl.uniformMatrix4fv(helperViewMatrixLoc, false, viewMatrix);
+
+    // Create buffer for backbone positions
+    const backboneBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, backboneBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(backboneGeometry.positions), gl.STATIC_DRAW);
+
+    gl.enableVertexAttribArray(helperPositionLoc);
+    gl.vertexAttribPointer(helperPositionLoc, 3, gl.FLOAT, false, 0, 0);
+
+    // Try to set line width (may not work on all systems)
+    gl.lineWidth(3.0);
+
+    const numVertices = backboneGeometry.positions.length / 3;
+    const numSegments = numVertices / 2;
+
+    // Draw each segment with its color (or use bright white for testing)
+    for (let i = 0; i < numSegments; i++) {
+        const colorIndex = i * 6; // 2 vertices * 3 components
+        const color = [
+            backboneGeometry.colors[colorIndex],
+            backboneGeometry.colors[colorIndex + 1],
+            backboneGeometry.colors[colorIndex + 2]
+        ];
+
+        // TESTING: Use bright white to make sure lines are visible
+        // Comment out the line below to use chain colors
+        gl.uniform3f(helperColorLoc, 1.0, 1.0, 1.0); // Bright white
+
+        // Use chain colors (or bright colors for visibility)
+        gl.uniform3f(helperColorLoc,
+            Math.max(color[0], 0.5), // Brighten colors
+            Math.max(color[1], 0.5),
+            Math.max(color[2], 0.5)
+        );
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, backboneBuffer);
+        gl.vertexAttribPointer(helperPositionLoc, 3, gl.FLOAT, false, 0, 0);
+
+        gl.drawArrays(gl.LINES, i * 2, 2);
+    }
+
+    // Reset line width
+    gl.lineWidth(1.0);
+
+    gl.deleteBuffer(backboneBuffer);
+}
+
 function renderGrid(projectionMatrix, viewMatrix) {
     gl.useProgram(helperProgram);
 
@@ -564,8 +625,8 @@ document.getElementById('reset-camera').addEventListener('click', () => {
 document.getElementById('view-mode').addEventListener('change', (e) => {
     viewMode = e.target.value;
 
-    // Adjust camera distance for protein view
-    if (viewMode === 'protein') {
+    // Adjust camera distance based on view
+    if (viewMode === 'protein' || viewMode === 'backbone') {
         currentCameraDistance = 25.0; // Closer camera for scaled proteins
 
         // Load protein if not already loaded
@@ -582,7 +643,7 @@ document.getElementById('view-mode').addEventListener('change', (e) => {
 
 // Protein selector
 document.getElementById('protein-selector').addEventListener('change', (e) => {
-    if (viewMode === 'protein') {
+    if (viewMode === 'protein' || viewMode === 'backbone') {
         loadProteinStructure(e.target.value);
     }
 });
@@ -602,13 +663,18 @@ async function loadProteinStructure(pdbId) {
         const loadTime = Date.now() - startTime;
         console.log(`✓ Loaded ${proteinData.atoms.length} atoms and ${proteinData.bonds.length} bonds in ${loadTime}ms`);
 
-        // Generate geometry
+        // Generate ball-and-stick geometry
         proteinGeometry = generateProteinGeometrySimple(proteinData, {
             atomScale: 0.3,
             sphereDetail: 10
         });
 
+        // Generate backbone trace geometry
+        const backboneTrace = extractBackboneTrace(proteinData);
+        backboneGeometry = generateBackboneGeometry(backboneTrace, proteinScale);
+
         console.log(`✓ Generated geometry for rendering`);
+        console.log(`✓ Backbone trace: ${backboneTrace.atoms.length} CA atoms, ${backboneTrace.segments.length} segments`);
 
         proteinLoaded = true;
         render();

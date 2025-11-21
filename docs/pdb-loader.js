@@ -376,3 +376,123 @@ async function fetchPDBFromRCSB(pdbId) {
     const url = `https://files.rcsb.org/download/${pdbId.toUpperCase()}.pdb`;
     return await loadPDB(url);
 }
+
+/**
+ * Extract backbone trace (CA atoms only) for cartoon representation
+ * @param {Object} proteinData - Data from parsePDB
+ * @returns {Object} Backbone trace data
+ */
+function extractBackboneTrace(proteinData) {
+    const backboneAtoms = [];
+    const backboneSegments = [];
+
+    // Group atoms by chain and residue
+    const chains = {};
+
+    for (const atom of proteinData.atoms) {
+        // Only consider CA (alpha carbon) atoms for backbone
+        if (atom.name === 'CA') {
+            const chainId = atom.chainId || 'A';
+            if (!chains[chainId]) {
+                chains[chainId] = [];
+            }
+            chains[chainId].push({
+                resSeq: atom.resSeq,
+                x: atom.x,
+                y: atom.y,
+                z: atom.z,
+                resName: atom.resName
+            });
+        }
+    }
+
+    // Sort each chain by residue sequence number
+    for (const chainId in chains) {
+        chains[chainId].sort((a, b) => a.resSeq - b.resSeq);
+    }
+
+    // Create line segments connecting consecutive CA atoms
+    for (const chainId in chains) {
+        const chain = chains[chainId];
+
+        for (let i = 0; i < chain.length; i++) {
+            backboneAtoms.push(chain[i]);
+
+            // Connect to next atom if consecutive residues
+            if (i < chain.length - 1) {
+                const current = chain[i];
+                const next = chain[i + 1];
+
+                // Only connect if residues are sequential (within 2 residues)
+                // This avoids connecting across chain breaks
+                if (Math.abs(next.resSeq - current.resSeq) <= 2) {
+                    backboneSegments.push({
+                        start: { x: current.x, y: current.y, z: current.z },
+                        end: { x: next.x, y: next.y, z: next.z },
+                        chainId: chainId
+                    });
+                }
+            }
+        }
+    }
+
+    return {
+        atoms: backboneAtoms,
+        segments: backboneSegments,
+        chains: Object.keys(chains)
+    };
+}
+
+/**
+ * Generate geometry for backbone trace rendering
+ * @param {Object} backboneTrace - Data from extractBackboneTrace
+ * @param {number} scale - Scale factor for coordinates
+ * @returns {Object} Geometry for rendering
+ */
+function generateBackboneGeometry(backboneTrace, scale = 1.0) {
+    const positions = [];
+    const colors = [];
+
+    // Colors for different chains
+    const chainColors = [
+        [0.2, 0.6, 1.0],  // Blue
+        [1.0, 0.5, 0.0],  // Orange
+        [0.0, 0.8, 0.3],  // Green
+        [0.9, 0.2, 0.5],  // Pink
+        [0.7, 0.7, 0.0],  // Yellow
+        [0.5, 0.0, 0.8],  // Purple
+    ];
+
+    // Create color map for chains
+    const chainColorMap = {};
+    backboneTrace.chains.forEach((chainId, index) => {
+        chainColorMap[chainId] = chainColors[index % chainColors.length];
+    });
+
+    // Generate line segments
+    for (const segment of backboneTrace.segments) {
+        // Start point
+        positions.push(
+            segment.start.x * scale,
+            segment.start.y * scale,
+            segment.start.z * scale
+        );
+
+        // End point
+        positions.push(
+            segment.end.x * scale,
+            segment.end.y * scale,
+            segment.end.z * scale
+        );
+
+        // Color for this chain
+        const color = chainColorMap[segment.chainId] || [0.8, 0.8, 0.8];
+        colors.push(...color);
+        colors.push(...color);
+    }
+
+    return {
+        positions: positions,
+        colors: colors
+    };
+}
