@@ -2,7 +2,9 @@
 
 // Get canvas and WebGL context
 const canvas = document.getElementById('webgl-canvas');
-const gl = canvas.getContext('webgl');
+const gl = canvas.getContext('webgl', {
+    antialias: true
+});
 
 if (!gl) {
     alert('WebGL not supported in this browser');
