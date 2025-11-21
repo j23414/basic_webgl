@@ -324,7 +324,8 @@ function generateProteinGeometrySimple(proteinData, options = {}) {
     const atomsGeometry = {
         positions: [],
         colors: [],
-        radii: []
+        radii: [],
+        elements: []
     };
 
     const bondsGeometry = {
@@ -341,6 +342,8 @@ function generateProteinGeometrySimple(proteinData, options = {}) {
 
         const radius = getVDWRadius(atom.element) * atomScale;
         atomsGeometry.radii.push(radius);
+
+        atomsGeometry.elements.push(atom.element);
     }
 
     // Store bond data (as line segments)

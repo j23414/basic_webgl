@@ -405,6 +405,8 @@ function renderProtein(projectionMatrix, viewMatrix) {
     // Render each atom as a sphere
     const numAtoms = proteinGeometry.atoms.positions.length / 3;
     for (let i = 0; i < numAtoms; i++) {
+        // Skip Hydrogens
+        if (proteinGeometry.atoms.elements[i] === 'H') continue;
         // Apply protein scale to positions
         const x = proteinGeometry.atoms.positions[i * 3] * proteinScale;
         const y = proteinGeometry.atoms.positions[i * 3 + 1] * proteinScale;
