@@ -745,12 +745,12 @@ async function loadProteinStructure(pdbId) {
     }
 }
 
-// ===== ANIMATION LOOP =====
-
-function animate() {
-    render();
-    requestAnimationFrame(animate);
-}
+//// ===== ANIMATION LOOP =====
+//
+//function animate() {
+//    render();
+//    requestAnimationFrame(animate);
+//}
 
 // ===== INITIALIZATION =====
 
@@ -758,7 +758,7 @@ function animate() {
 initSphereGeometry();
 
 // Start rendering first
-animate();
+//animate();
 
 // Load default protein on startup (after render loop starts)
 loadProteinStructure('5IYN');
