@@ -109,6 +109,7 @@ const helperFragmentShaderSource = `
 // ===== SHADER COMPILATION =====
 
 function compileShader(source, type) {
+    //console.log("func: compileShader")
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
@@ -123,6 +124,7 @@ function compileShader(source, type) {
 }
 
 function createProgram(vertexSource, fragmentSource) {
+    //console.log("func: createProgram")
     const vertexShader = compileShader(vertexSource, gl.VERTEX_SHADER);
     const fragmentShader = compileShader(fragmentSource, gl.FRAGMENT_SHADER);
 
@@ -207,6 +209,7 @@ gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(gridVertices), gl.STATIC_DRAW);
 // ===== MATRIX MATH UTILITIES =====
 
 function createPerspectiveMatrix(fov, aspect, near, far) {
+    console.log("func: createPerspectiveMatrix")
     const f = 1.0 / Math.tan(fov / 2);
     const nf = 1 / (near - far);
 
@@ -219,6 +222,7 @@ function createPerspectiveMatrix(fov, aspect, near, far) {
 }
 
 function createLookAtMatrix(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ) {
+    console.log("func: createLookAtMatrix")
     let zx = eyeX - centerX;
     let zy = eyeY - centerY;
     let zz = eyeZ - centerZ;
@@ -249,6 +253,7 @@ function createLookAtMatrix(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, up
 }
 
 function createTranslationMatrix(x, y, z) {
+    //console.log("func: createTranslationMatrix")
     return [
         1, 0, 0, 0,
         0, 1, 0, 0,
@@ -258,6 +263,7 @@ function createTranslationMatrix(x, y, z) {
 }
 
 function createScaleMatrix(sx, sy, sz) {
+    //console.log("func: createScaleMatrix")
     return [
         sx, 0, 0, 0,
         0, sy, 0, 0,
@@ -267,6 +273,7 @@ function createScaleMatrix(sx, sy, sz) {
 }
 
 function multiplyMatrices(a, b) {
+    //console.log("func: multiplyMatrices")
     const result = new Array(16);
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 4; j++) {
@@ -300,6 +307,7 @@ function initSphereGeometry() {
 }
 
 function render() {
+    console.log("func: render")
     // Clear
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0.22, 0.22, 0.22, 1.0);
@@ -337,6 +345,7 @@ function render() {
 }
 
 function renderCubes(projectionMatrix, viewMatrix) {
+    console.log("func: renderCubes")
     gl.useProgram(cubeProgram);
 
     // Get attribute and uniform locations
@@ -376,6 +385,7 @@ function renderCubes(projectionMatrix, viewMatrix) {
 }
 
 function renderProtein(projectionMatrix, viewMatrix) {
+    console.log("func: renderProtein")
     if (!proteinGeometry || !sphereGeometry) return;
 
     gl.useProgram(cubeProgram);
@@ -447,6 +457,7 @@ function renderProtein(projectionMatrix, viewMatrix) {
 }
 
 function renderBonds(projectionMatrix, viewMatrix) {
+    console.log("func: renderBonds")
     if (!proteinGeometry) return;
 
     gl.useProgram(helperProgram);
@@ -481,6 +492,7 @@ function renderBonds(projectionMatrix, viewMatrix) {
 }
 
 function renderBackbone(projectionMatrix, viewMatrix) {
+    console.log("func: renderBackbone")
     if (!backboneGeometry || !sphereGeometry) return;
 
     gl.useProgram(cubeProgram);
@@ -551,6 +563,7 @@ function renderBackbone(projectionMatrix, viewMatrix) {
 }
 
 function renderBackboneLines(projectionMatrix, viewMatrix) {
+    console.log("func: renderBackboneLines")
     if (!backboneGeometry) return;
 
     gl.useProgram(helperProgram);
@@ -594,6 +607,7 @@ function renderBackboneLines(projectionMatrix, viewMatrix) {
 }
 
 function renderGrid(projectionMatrix, viewMatrix) {
+    console.log("func: renderGrid")
     gl.useProgram(helperProgram);
 
     const helperPositionLoc = gl.getAttribLocation(helperProgram, 'aPosition');
@@ -612,6 +626,7 @@ function renderGrid(projectionMatrix, viewMatrix) {
 }
 
 function renderAxis(projectionMatrix, viewMatrix) {
+    console.log("func: renderAxis")
     gl.useProgram(helperProgram);
 
     const helperPositionLoc = gl.getAttribLocation(helperProgram, 'aPosition');
@@ -642,12 +657,14 @@ function renderAxis(projectionMatrix, viewMatrix) {
 
 // Mouse events
 canvas.addEventListener('mousedown', (e) => {
+    //console.log("evt: mousedown")
     isDragging = true;
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
 });
 
 canvas.addEventListener('mousemove', (e) => {
+    //console.log("evt: mousemove")
     if (!isDragging) return;
 
     const deltaX = e.clientX - lastMouseX;
@@ -666,15 +683,18 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 canvas.addEventListener('mouseup', () => {
+    //console.log("evt: mouseup")
     isDragging = false;
 });
 
 canvas.addEventListener('mouseleave', () => {
+    //console.log("evt: mouseleave")
     isDragging = false;
 });
 
 // Reset camera button
 document.getElementById('reset-camera').addEventListener('click', () => {
+    //console.log("evt: Button reset-camera")
     rotationX = defaultRotationX;
     rotationY = defaultRotationY;
     render();
@@ -682,6 +702,7 @@ document.getElementById('reset-camera').addEventListener('click', () => {
 
 // View mode selector
 document.getElementById('view-mode').addEventListener('change', (e) => {
+    //console.log("evt: Button view mode")
     viewMode = e.target.value;
 
     // Adjust camera distance based on view
@@ -702,6 +723,7 @@ document.getElementById('view-mode').addEventListener('change', (e) => {
 
 // Protein selector
 document.getElementById('protein-selector').addEventListener('change', (e) => {
+    //console.log("evt: Button protein selection")
     if (viewMode === 'protein' || viewMode === 'backbone') {
         loadProteinStructure(e.target.value);
     }
