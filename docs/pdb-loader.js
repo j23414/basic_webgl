@@ -30,6 +30,7 @@ function parsePDB(text) {
 
     for (const line of lines) {
         // Parse ATOM and HETATM records
+        // Column parsing roughly following table from https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html
         if (line.startsWith('ATOM  ') || line.startsWith('HETATM')) {
             const atom = {
                 serial: parseInt(line.substring(6, 11).trim()),
@@ -41,6 +42,7 @@ function parsePDB(text) {
                 y: parseFloat(line.substring(38, 46).trim()),
                 z: parseFloat(line.substring(46, 54).trim()),
                 element: line.substring(76, 78).trim() || guessElement(line.substring(12, 16).trim())
+                //charge
             };
             atoms.push(atom);
         }
