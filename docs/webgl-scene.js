@@ -1,3 +1,26 @@
+// Debug Settings
+// Debug settings object
+const debugSettings = {
+    proteinScale: 1.0,
+    beadRadius: 0.3,
+    sphereDetail: 10,
+    showGrid: true,
+    showAxis: true,
+    showBonds: true,
+    lightX: 5.0,
+    lightY: 5.0,
+    lightZ: 5.0,
+    ambientStrength: 0.3,
+    diffuseStrength: 0.7,
+    backgroundColor: '#1a1a1a',
+    reloadProtein: function() {
+        const pdbId = document.getElementById('protein-selector').value;
+        loadProteinStructure(pdbId);
+    }
+};
+
+
+
 // WebGL Scene Setup and Rendering
 
 // Get canvas and WebGL context
@@ -784,3 +807,28 @@ initSphereGeometry();
 
 // Load default protein on startup (after render loop starts)
 loadProteinStructure('5IYN');
+
+// Debug Settings
+
+// Create GUI
+const gui = new lil.GUI();
+
+// Protein settings folder
+const proteinFolder = gui.addFolder('Protein');
+proteinFolder.add(debugSettings, 'beadRadius', 0.1, 1.0).name('Bead Size');
+proteinFolder.open();
+
+// Display settings folder
+const displayFolder = gui.addFolder('Display');
+displayFolder.add(debugSettings, 'showGrid').name('Show Grid');
+displayFolder.add(debugSettings, 'showAxis').name('Show Axis');
+displayFolder.add(debugSettings, 'showBonds').name('Show Bonds');
+displayFolder.open();
+
+// Lighting settings folder
+const lightingFolder = gui.addFolder('Lighting');
+lightingFolder.add(debugSettings, 'lightX', -10, 10).name('Light X');
+lightingFolder.add(debugSettings, 'lightY', -10, 10).name('Light Y');
+lightingFolder.add(debugSettings, 'lightZ', -10, 10).name('Light Z');
+lightingFolder.add(debugSettings, 'ambientStrength', 0, 1).name('Ambient');
+lightingFolder.add(debugSettings, 'diffuseStrength', 0, 1).name('Diffuse');
