@@ -36,7 +36,7 @@ let currentCameraDistance = 25.0; // Start with protein camera distance
 let proteinData = null;
 let proteinGeometry = null;
 let proteinLoaded = false;
-const proteinScale = 1; // Scale factor to make proteins more visible (Angstroms to world units)
+const proteinScale = 1.0; // Scale factor to make proteins more visible (Angstroms to world units)
 
 // ===== SHADER SOURCES =====
 
@@ -307,7 +307,7 @@ function render() {
     gl.enable(gl.DEPTH_TEST);
 
     // Projection matrix
-    const fov = 45 * Math.PI / 180;
+    const fov = 75 * Math.PI / 180;
     const aspect = canvas.width / canvas.height;
     const projectionMatrix = createPerspectiveMatrix(fov, aspect, 0.1, 100.0);
 
@@ -320,13 +320,20 @@ function render() {
     // Render based on view mode
     if (viewMode === 'protein' && proteinLoaded) {
         renderProtein(projectionMatrix, viewMatrix);
+        // Render helpers for protein view
+        renderGrid(projectionMatrix, viewMatrix);
+        renderAxis(projectionMatrix, viewMatrix);
+    } else if (viewMode === 'backbone' && backboneGeometry) {
+        renderBackbone(projectionMatrix, viewMatrix);
+        // Optionally hide helpers in backbone view for clarity
+        // renderGrid(projectionMatrix, viewMatrix);
+        // renderAxis(projectionMatrix, viewMatrix);
     } else {
         renderCubes(projectionMatrix, viewMatrix);
+        // Render helpers for cube view
+        renderGrid(projectionMatrix, viewMatrix);
+        renderAxis(projectionMatrix, viewMatrix);
     }
-
-    // Always render helpers
-    renderGrid(projectionMatrix, viewMatrix);
-    renderAxis(projectionMatrix, viewMatrix);
 }
 
 function renderCubes(projectionMatrix, viewMatrix) {
@@ -473,6 +480,119 @@ function renderBonds(projectionMatrix, viewMatrix) {
     gl.deleteBuffer(bondBuffer);
 }
 
+function renderBackbone(projectionMatrix, viewMatrix) {
+    if (!backboneGeometry || !sphereGeometry) return;
+
+    gl.useProgram(cubeProgram);
+
+    const cubePositionLoc = gl.getAttribLocation(cubeProgram, 'aPosition');
+    const cubeNormalLoc = gl.getAttribLocation(cubeProgram, 'aNormal');
+    const cubeModelMatrixLoc = gl.getUniformLocation(cubeProgram, 'uModelMatrix');
+    const cubeViewMatrixLoc = gl.getUniformLocation(cubeProgram, 'uViewMatrix');
+    const cubeProjectionMatrixLoc = gl.getUniformLocation(cubeProgram, 'uProjectionMatrix');
+    const cubeLightPosLoc = gl.getUniformLocation(cubeProgram, 'uLightPos');
+    const cubeColorLoc = gl.getUniformLocation(cubeProgram, 'uColor');
+
+    gl.uniformMatrix4fv(cubeProjectionMatrixLoc, false, projectionMatrix);
+    gl.uniformMatrix4fv(cubeViewMatrixLoc, false, viewMatrix);
+    gl.uniform3f(cubeLightPosLoc, 5.0, 5.0, 5.0);
+
+    // Create temporary buffers for sphere
+    const sphereVertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, sphereGeometry.vertices, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(cubePositionLoc);
+    gl.vertexAttribPointer(cubePositionLoc, 3, gl.FLOAT, false, 0, 0);
+
+    const sphereNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphereNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, sphereGeometry.normals, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(cubeNormalLoc);
+    gl.vertexAttribPointer(cubeNormalLoc, 3, gl.FLOAT, false, 0, 0);
+
+    const sphereIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, sphereGeometry.indices, gl.STATIC_DRAW);
+
+    // Render backbone as small spheres at CA positions
+    const numVertices = backboneGeometry.positions.length / 3;
+    const beadRadius = 1; // Small spheres
+
+    for (let i = 0; i < numVertices; i++) {
+        const x = backboneGeometry.positions[i * 3];
+        const y = backboneGeometry.positions[i * 3 + 1];
+        const z = backboneGeometry.positions[i * 3 + 2];
+
+        // Create model matrix: scale then translate
+        const scaleMatrix = createScaleMatrix(beadRadius, beadRadius, beadRadius);
+        const transMatrix = createTranslationMatrix(x, y, z);
+        const modelMatrix = multiplyMatrices(transMatrix, scaleMatrix);
+
+        gl.uniformMatrix4fv(cubeModelMatrixLoc, false, modelMatrix);
+
+        // Get color for this vertex
+        const color = [
+            backboneGeometry.colors[i * 3],
+            backboneGeometry.colors[i * 3 + 1],
+            backboneGeometry.colors[i * 3 + 2]
+        ];
+        gl.uniform3f(cubeColorLoc, color[0], color[1], color[2]);
+
+        //gl.drawElements(gl.TRIANGLES, sphereVertexCount, gl.UNSIGNED_SHORT, 0);
+    }
+
+    // Also draw connecting lines between spheres for clarity
+    renderBackboneLines(projectionMatrix, viewMatrix);
+
+    // Clean up temporary buffers
+    gl.deleteBuffer(sphereVertexBuffer);
+    gl.deleteBuffer(sphereNormalBuffer);
+    gl.deleteBuffer(sphereIndexBuffer);
+}
+
+function renderBackboneLines(projectionMatrix, viewMatrix) {
+    if (!backboneGeometry) return;
+
+    gl.useProgram(helperProgram);
+
+    const helperPositionLoc = gl.getAttribLocation(helperProgram, 'aPosition');
+    const helperViewMatrixLoc = gl.getUniformLocation(helperProgram, 'uViewMatrix');
+    const helperProjectionMatrixLoc = gl.getUniformLocation(helperProgram, 'uProjectionMatrix');
+    const helperColorLoc = gl.getUniformLocation(helperProgram, 'uColor');
+
+    gl.uniformMatrix4fv(helperProjectionMatrixLoc, false, projectionMatrix);
+    gl.uniformMatrix4fv(helperViewMatrixLoc, false, viewMatrix);
+
+    // Create buffer for backbone positions
+    const backboneBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, backboneBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(backboneGeometry.positions), gl.STATIC_DRAW);
+
+    gl.enableVertexAttribArray(helperPositionLoc);
+    gl.vertexAttribPointer(helperPositionLoc, 3, gl.FLOAT, false, 0, 0);
+
+    const numVertices = backboneGeometry.positions.length / 3;
+    const numSegments = numVertices / 2;
+
+    // Draw each segment with its color
+    for (let i = 0; i < numSegments; i++) {
+        const colorIndex = i * 6; // 2 vertices * 3 components
+        const color = [
+            backboneGeometry.colors[colorIndex],
+            backboneGeometry.colors[colorIndex + 1],
+            backboneGeometry.colors[colorIndex + 2]
+        ];
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, backboneBuffer);
+        gl.vertexAttribPointer(helperPositionLoc, 3, gl.FLOAT, false, 0, 0);
+
+        gl.uniform3f(helperColorLoc, color[0], color[1], color[2]);
+        gl.drawArrays(gl.LINES, i * 2, 2);
+    }
+
+    gl.deleteBuffer(backboneBuffer);
+}
+
 function renderGrid(projectionMatrix, viewMatrix) {
     gl.useProgram(helperProgram);
 
@@ -564,8 +684,8 @@ document.getElementById('reset-camera').addEventListener('click', () => {
 document.getElementById('view-mode').addEventListener('change', (e) => {
     viewMode = e.target.value;
 
-    // Adjust camera distance for protein view
-    if (viewMode === 'protein') {
+    // Adjust camera distance based on view
+    if (viewMode === 'protein' || viewMode === 'backbone') {
         currentCameraDistance = 25.0; // Closer camera for scaled proteins
 
         // Load protein if not already loaded
@@ -582,7 +702,7 @@ document.getElementById('view-mode').addEventListener('change', (e) => {
 
 // Protein selector
 document.getElementById('protein-selector').addEventListener('change', (e) => {
-    if (viewMode === 'protein') {
+    if (viewMode === 'protein' || viewMode === 'backbone') {
         loadProteinStructure(e.target.value);
     }
 });
@@ -602,13 +722,19 @@ async function loadProteinStructure(pdbId) {
         const loadTime = Date.now() - startTime;
         console.log(`✓ Loaded ${proteinData.atoms.length} atoms and ${proteinData.bonds.length} bonds in ${loadTime}ms`);
 
-        // Generate geometry
+        // Generate ball-and-stick geometry
         proteinGeometry = generateProteinGeometrySimple(proteinData, {
-            atomScale: 0.3,
-            sphereDetail: 10
+            atomScale: 1.0,
+            //atomScale: 0.3,
+            sphereDetail: 6
         });
 
+        // Generate backbone trace geometry
+        const backboneTrace = extractBackboneTrace(proteinData);
+        backboneGeometry = generateBackboneGeometry(backboneTrace, 0.3);
+
         console.log(`✓ Generated geometry for rendering`);
+        console.log(`✓ Backbone trace: ${backboneTrace.atoms.length} CA atoms, ${backboneTrace.segments.length} segments`);
 
         proteinLoaded = true;
         render();
