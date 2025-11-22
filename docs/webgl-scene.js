@@ -809,26 +809,57 @@ initSphereGeometry();
 loadProteinStructure('5IYN');
 
 // Debug Settings
+// Full documentation of lil-gui at: https://lil-gui.georgealways.com/
 
 // Create GUI
 const gui = new lil.GUI();
+// const gui = new lil.GUI({
+//     width: 300,
+//     title: "lil-gui debug ui",
+//     closeFolders: false
+// })
+// gui.close()
+// gui.hide() // can add a key toggle
+window.addEventListener('keydown', (event) => {
+    if(event.key == 'h')
+        gui.show(gui._hidden)
+})
 
 // Protein settings folder
 const proteinFolder = gui.addFolder('Protein');
-proteinFolder.add(debugSettings, 'beadRadius', 0.1, 1.0).name('Bead Size');
-proteinFolder.open();
+proteinFolder
+    .add(debugSettings, 'beadRadius', 0.1, 1.0)
+    .name('Bead Size');
+//proteinFolder.open();
 
 // Display settings folder
 const displayFolder = gui.addFolder('Display');
-displayFolder.add(debugSettings, 'showGrid').name('Show Grid');
-displayFolder.add(debugSettings, 'showAxis').name('Show Axis');
-displayFolder.add(debugSettings, 'showBonds').name('Show Bonds');
-displayFolder.open();
+// Can also nest folders inside of folders (just organize the Debug UI)
+displayFolder
+    .add(debugSettings, 'showGrid')
+    .name('Show Grid');
+displayFolder
+    .add(debugSettings, 'showAxis')
+    .name('Show Axis');
+displayFolder
+    .add(debugSettings, 'showBonds')
+    .name('Show Bonds');
+//displayFolder.open();
 
 // Lighting settings folder
 const lightingFolder = gui.addFolder('Lighting');
-lightingFolder.add(debugSettings, 'lightX', -10, 10).name('Light X');
-lightingFolder.add(debugSettings, 'lightY', -10, 10).name('Light Y');
-lightingFolder.add(debugSettings, 'lightZ', -10, 10).name('Light Z');
-lightingFolder.add(debugSettings, 'ambientStrength', 0, 1).name('Ambient');
-lightingFolder.add(debugSettings, 'diffuseStrength', 0, 1).name('Diffuse');
+lightingFolder
+    .add(debugSettings, 'lightX', -10, 10)
+    .name('Light X');
+lightingFolder
+    .add(debugSettings, 'lightY', -10, 10)
+    .name('Light Y');
+lightingFolder
+    .add(debugSettings, 'lightZ', -10, 10)
+    .name('Light Z');
+lightingFolder
+    .add(debugSettings, 'ambientStrength', 0, 1)
+    .name('Ambient');
+lightingFolder
+    .add(debugSettings, 'diffuseStrength', 0, 1)
+    .name('Diffuse');
