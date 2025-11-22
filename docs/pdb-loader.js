@@ -48,12 +48,12 @@ function parsePDB(text) {
 
     console.log(`Parsed ${atoms.length} atoms from PDB`);
 
+    // Center the molecule at origin
+    centerMolecule(atoms);
+
     // Calculate bonds based on distance
     const bonds = calculateBonds(atoms);
     console.log(`Calculated ${bonds.length} bonds`);
-
-    // Center the molecule at origin
-    centerMolecule(atoms);
 
     return { atoms, bonds };
 }
@@ -469,16 +469,16 @@ function generateBackboneGeometry(backboneTrace, scale = 1.0) {
         chainColorMap[chainId] = chainColors[index % chainColors.length];
     });
 
-    // Generate line segments
+    // Generate line segments (APPLY SCALE HERE)
     for (const segment of backboneTrace.segments) {
-        // Start point
+        // Start point (scaled)
         positions.push(
             segment.start.x * scale,
             segment.start.y * scale,
             segment.start.z * scale
         );
 
-        // End point
+        // End point (scaled)
         positions.push(
             segment.end.x * scale,
             segment.end.y * scale,
