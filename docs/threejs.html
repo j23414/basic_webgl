@@ -110,13 +110,39 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         })
 
-        function animate() {
-            requestAnimationFrame(animate);
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
-            renderer.render(scene, camera);
+        // function animate() {
+        //     requestAnimationFrame(animate);
+        //     renderer.render(scene, camera);
+        // }
+        // animate();
+
+        /**
+         * Animate
+         */
+        const clock = new THREE.Clock()
+
+        const tick = () =>
+        {
+            const elapsedTime = clock.getElapsedTime()
+
+            sphere.rotation.y = elapsedTime*0.2
+            plane.rotation.y = elapsedTime*0.2
+            torus.rotation.y = elapsedTime*0.2
+
+            sphere.rotation.x = -elapsedTime*0.15
+            plane.rotation.x = -elapsedTime*0.15
+            torus.rotation.x = -elapsedTime*0.15
+
+            controls.update()
+
+            // Render
+            renderer.render(scene, camera)
+
+            // Call tick again on the next frame
+            window.requestAnimationFrame(tick)
         }
-        animate();
+
+        tick()
     </script>
 </body>
 </html>
