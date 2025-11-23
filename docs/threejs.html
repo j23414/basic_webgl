@@ -16,7 +16,8 @@
     <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
       }
     }
     </script>
@@ -25,6 +26,11 @@
 
     <script type="module">
         import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        // import { atomicXor } from 'three/tsl' // for advanced shaders... not yet
+
+        // For a Debug UI
+        import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
         const sizes = {
           width: window.innerWidth,
