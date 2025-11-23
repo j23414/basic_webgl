@@ -46,10 +46,47 @@
         document.body.appendChild(renderer.domElement);
         const canvas = renderer.domElement
 
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
+        // const geometry = new THREE.BoxGeometry();
+        // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        // const cube = new THREE.Mesh(geometry, material);
+        // scene.add(cube);
+
+        const material = new THREE.MeshNormalMaterial()
+        material.side = THREE.DoubleSide
+        material.flatShading = true
+
+        // Geometry is used once for instantiating the Mesh, ergo can reuse geometry
+        // So changes to size need to applied to Mesh, not Geometry
+        const geo_ball = new THREE.SphereGeometry(0.5, 6, 6)
+        const sphere = new THREE.Mesh(
+            geo_ball,
+            material
+        )
+
+        const sphere2 = new THREE.Mesh(
+            geo_ball,
+            material
+        )
+
+        const plane = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.5, 0.5),
+            material
+        )
+
+        const torus = new THREE.Mesh(
+            new THREE.TorusGeometry(0.3, 0.15, 12, 48, Math.PI*2),
+            material
+        )
+
+        scene.add(sphere, plane, torus, sphere2)
+        // Create and add the axes helper
+        const axesHelper = new THREE.AxesHelper(1); // Adjust size as needed
+
+        scene.add(axesHelper);
+
+        sphere.position.x=-1
+        torus.position.x=1
+        sphere2.position.set(-1,1,0)
 
         camera.position.set(1,1,2);
 
