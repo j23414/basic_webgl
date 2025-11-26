@@ -27,6 +27,7 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { Timer } from 'three/addons/misc/Timer.js'
         // import { atomicXor } from 'three/tsl' // for advanced shaders... not yet
 
         // For a Debug UI
@@ -119,11 +120,12 @@
         /**
          * Animate
          */
-        const clock = new THREE.Clock()
+        const timer = new Timer()
 
         const tick = () =>
         {
-            const elapsedTime = clock.getElapsedTime()
+            timer.update()
+            const elapsedTime = timer.getElapsed()
 
             sphere.rotation.y = elapsedTime*0.2
             plane.rotation.y = elapsedTime*0.2
