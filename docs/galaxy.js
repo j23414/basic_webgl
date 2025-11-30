@@ -16,7 +16,8 @@ let debugParameters = {
     spin: 1,
     branches: 5,
     randomness: 0.2,
-    randomnessPower: 3
+    randomnessPower: 3,
+    color: '#00eeff'
 };
 
 const sizes = {
@@ -86,7 +87,8 @@ const generateGalaxy = () => {
             transparent: true,
             alphaTest: 0.1,
             depthWrite: false,
-            blending: THREE.AdditiveBlending
+            blending: THREE.AdditiveBlending,
+            color: debugParameters.color
         });
 
         const points = new THREE.Points(geometry, material);
@@ -103,6 +105,13 @@ gui.add(debugParameters, 'radius').min(0.01).max(20).step(0.01).onFinishChange(g
 gui.add(debugParameters, 'spin').min(-5).max(5).step(0.001).onFinishChange(generateGalaxy);
 gui.add(debugParameters, 'branches').min(2).max(10).step(1).onFinishChange(generateGalaxy);
 gui.add(debugParameters, 'randomness').min(0).max(2).step(0.001).onFinishChange(generateGalaxy);
+gui
+  .addColor(debugParameters, 'color')
+  .onChange(() => {
+    pointsGroup.traverse( (object) => {
+        if(object.material) object.material.color.set(debugParameters.color)
+    })
+  })
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
 
