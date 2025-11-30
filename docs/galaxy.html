@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Three.js Test</title>
+    <style>
+        canvas { display: block; }
+        * { margin: 0; padding: 0; }
+        html, body { overflow: hidden; }
+        .webgl { position: fixed; top: 0; left: 0; outline: none; }
+    </style>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+
+</head>
+<body>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/": "https://cdn.jsdelivr.net/npm/three@0.160.0/"
+      }
+    }
+    </script>
+
+    <!-- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#applying_the_module_to_your_html -->
+    <script type="module" src="./threejs.js"></script>
+    </script>
+</body>
+</html>
