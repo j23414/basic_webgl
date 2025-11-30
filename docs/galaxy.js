@@ -55,7 +55,7 @@ const generateGalaxy = () => {
         const randomZ = (Math.random() - 0.5) * debugParameters.randomness * radius;
 
         positions[i3 + 0] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-        positions[i3 + 1] = randomY;
+        positions[i3 + 1] = -5 * Math.exp(-1.842 * radius )+ randomY + 2;
         positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
 
     }
@@ -93,7 +93,7 @@ const canvas = renderer.domElement
 const axesHelper = new THREE.AxesHelper(1); // Adjust size as needed
 scene.add(axesHelper);
 
-camera.position.set(1, 1, 2);
+camera.position.set(2, 2, 4);
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
