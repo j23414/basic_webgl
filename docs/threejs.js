@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Timer } from 'three/examples/jsm/misc/Timer.js'
-// import { atomicXor } from 'three/tsl' // for advanced shaders... not yet
 
 // For a Debug UI
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
@@ -19,11 +18,6 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(sizes.width, sizes.height);
 document.body.appendChild(renderer.domElement);
 const canvas = renderer.domElement
-
-// const geometry = new THREE.BoxGeometry();
-// const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-// const cube = new THREE.Mesh(geometry, material);
-// scene.add(cube);
 
 const material = new THREE.MeshNormalMaterial()
 material.side = THREE.DoubleSide
@@ -83,14 +77,8 @@ window.addEventListener('resize', () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
-// function animate() {
-//     requestAnimationFrame(animate);
-//     renderer.render(scene, camera);
-// }
-// animate();
-
 /**
- * Animate
+ * Timer Loop
  */
 const timer = new Timer()
 
