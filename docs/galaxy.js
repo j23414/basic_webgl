@@ -20,8 +20,8 @@ let debugParameters = {
 };
 
 const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight
+    width: window.innerWidth,
+    height: window.innerHeight
 }
 
 /**
@@ -101,17 +101,17 @@ controls.enableDamping = true
 
 // Update size
 window.addEventListener('resize', () => {
-  // Update sizes
-  sizes.width = window.innerWidth
-  sizes.height = window.innerHeight
+    // Update sizes
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
 
-  // Update camera
-  camera.aspect = sizes.width / sizes.height
-  camera.updateProjectionMatrix()
+    // Update camera
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
 
-  // Update renderer
-  renderer.setSize(sizes.width, sizes.height)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
 /**
@@ -120,8 +120,8 @@ window.addEventListener('resize', () => {
 const timer = new Timer()
 
 const tick = () => {
-  timer.update()
-  const elapsedTime = timer.getElapsed()
+    timer.update()
+    const elapsedTime = timer.getElapsed()
 
     if (points) {
         points.rotation.y = elapsedTime * 0.1;
@@ -129,13 +129,11 @@ const tick = () => {
 
     controls.update()
 
-  controls.update()
+    // Render
+    renderer.render(scene, camera)
 
-  // Render
-  renderer.render(scene, camera)
-
-  // Call tick again on the next frame
-  window.requestAnimationFrame(tick)
+    // Call tick again on the next frame
+    window.requestAnimationFrame(tick)
 }
 
 tick()
