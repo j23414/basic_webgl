@@ -1,9 +1,16 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Timer } from 'three/examples/jsm/misc/Timer.js'
-
-// For a Debug UI
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
+
+/**
+ * Debug
+ */
+const gui = new GUI({ width: 400 });
+
+let parameters = {
+  sphereSize: 1
+}
 
 const sizes = {
   width: window.innerWidth,
@@ -35,6 +42,9 @@ const sphere2 = new THREE.Mesh(
   geo_ball,
   material
 )
+gui.add(parameters, 'sphereSize').min(0.25).max(3).step(0.25).onFinishChange(() => {
+  sphere2.scale.setScalar(parameters.sphereSize)
+})
 
 const plane = new THREE.Mesh(
   new THREE.PlaneGeometry(0.5, 0.5),
