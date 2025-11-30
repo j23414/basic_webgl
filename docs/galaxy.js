@@ -11,7 +11,7 @@ const gui = new GUI({ width: 400 });
 // Debug Parameters
 let debugParameters = {
     particleCount: 4000,
-    size: 0.02,
+    size: 0.08,
     radius: 5,
     spin: 1,
     branches: 5,
@@ -25,51 +25,74 @@ const sizes = {
 }
 
 /**
+ * Load text texture for DNA bases: A, C, G, T
+ */
+const textureLoader = new THREE.TextureLoader();
+// const dnaTexture = textureLoader.load('/textures/dna-letters.png');
+const aTexture = textureLoader.load('/textures/A.png');
+const cTexture = textureLoader.load('/textures/C.png');
+const gTexture = textureLoader.load('/textures/G.png');
+const tTexture = textureLoader.load('/textures/T.png');
+
+const dnaTextures = [aTexture, cTexture, gTexture, tTexture]
+
+/**
  * Create galaxy
  */
-let geometry = null
-let material = null
-let points = null
-let positions = null
+let pointsGroup = new THREE.Group()
+scene.add(pointsGroup)
 
 const generateGalaxy = () => {
     // Dispose of previous Galaxy to avoid memory leaks
-    if (points) {
-        geometry.dispose()
-        material.dispose()
-        scene.remove(points)
+    pointsGroup.traverse(function(object) {
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) object.material.dispose();
+    })
+
+    pointsGroup.clear();
+    scene.remove(pointsGroup)
+
+    //let letterIndex = 0
+    // For each ACGT letter
+    const eachCount = debugParameters.particleCount / 4
+    for (let j = 0; j < 4; j++) {
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(debugParameters.particleCount * 3 / 4);
+
+        for (let i = 0; i < eachCount; i++) {
+            const i3 = i * 3;
+
+            const radius = Math.random() * debugParameters.radius;
+            const spinAngle = radius * debugParameters.spin;
+            const branchAngle = (i % debugParameters.branches) / debugParameters.branches * Math.PI * 2;
+
+            const randomX = (Math.random() - 0.5) * debugParameters.randomness * radius;
+            const randomY = (Math.random() - 0.5) * debugParameters.randomness * radius;
+            const randomZ = (Math.random() - 0.5) * debugParameters.randomness * radius;
+
+            positions[i3 + 0] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+            positions[i3 + 1] = -5 * Math.exp(-1.842 * radius )+ randomY + 2;
+            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
+            // Randomly assign one of the 4 letters by setting UV coordinates, NOOP until I understand this
+            // letterIndex = Math.floor(Math.random() * 4);
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({
+            size: debugParameters.size,
+            sizeAttenuation: true,
+            alphaMap: dnaTextures[j],
+            transparent: true,
+            alphaTest: 0.1,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+        });
+
+        const points = new THREE.Points(geometry, material);
+        pointsGroup.add(points)
     }
-
-    geometry = new THREE.BufferGeometry();
-    positions = new Float32Array(debugParameters.particleCount * 3);
-
-    for (let i = 0; i < debugParameters.particleCount; i++) {
-        const i3 = i * 3;
-
-        const radius = Math.random() * debugParameters.radius;
-        const spinAngle = radius * debugParameters.spin;
-        const branchAngle = (i % debugParameters.branches) / debugParameters.branches * Math.PI * 2;
-
-        const randomX = (Math.random() - 0.5) * debugParameters.randomness * radius;
-        const randomY = (Math.random() - 0.5) * debugParameters.randomness * radius;
-        const randomZ = (Math.random() - 0.5) * debugParameters.randomness * radius;
-
-        positions[i3 + 0] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-        positions[i3 + 1] = -5 * Math.exp(-1.842 * radius )+ randomY + 2;
-        positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
-
-    }
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    material = new THREE.PointsMaterial({
-        size: debugParameters.size,
-        sizeAttenuation: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending
-    });
-
-    points = new THREE.Points(geometry, material);
-    scene.add(points);
+    scene.add(pointsGroup);
 };
 
 generateGalaxy();
@@ -89,11 +112,11 @@ renderer.setSize(sizes.width, sizes.height);
 document.body.appendChild(renderer.domElement);
 const canvas = renderer.domElement
 
-// Create and add the axes helper
-const axesHelper = new THREE.AxesHelper(1); // Adjust size as needed
-scene.add(axesHelper);
+// // Create and add the axes helper
+// const axesHelper = new THREE.AxesHelper(1); // Adjust size as needed
+// scene.add(axesHelper);
 
-camera.position.set(2, 2, 4);
+camera.position.set(2, 1.5, 3);
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
@@ -123,8 +146,8 @@ const tick = () => {
     timer.update()
     const elapsedTime = timer.getElapsed()
 
-    if (points) {
-        points.rotation.y = elapsedTime * 0.1;
+    if (pointsGroup) {
+        pointsGroup.rotation.y = elapsedTime * 0.1;
     }
 
     controls.update()
