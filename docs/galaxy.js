@@ -29,10 +29,10 @@ const sizes = {
  */
 const textureLoader = new THREE.TextureLoader();
 // const dnaTexture = textureLoader.load('/textures/dna-letters.png');
-const aTexture = textureLoader.load('/textures/A.png');
-const cTexture = textureLoader.load('/textures/C.png');
-const gTexture = textureLoader.load('/textures/G.png');
-const tTexture = textureLoader.load('/textures/T.png');
+const aTexture = textureLoader.load('https://j23414.github.io/basic_webgl/textures/A.png');
+const cTexture = textureLoader.load('https://j23414.github.io/basic_webgl/textures/C.png');
+const gTexture = textureLoader.load('https://j23414.github.io/basic_webgl/textures/G.png');
+const tTexture = textureLoader.load('https://j23414.github.io/basic_webgl/textures/T.png');
 
 const dnaTextures = [aTexture, cTexture, gTexture, tTexture]
 
