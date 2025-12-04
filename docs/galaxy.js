@@ -7,7 +7,7 @@ import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
  * Scene and Debug
  */
 const scene = new THREE.Scene();
-const gui = new GUI({ width: 400 });
+const gui = new GUI();
 // Debug Parameters
 let debugParameters = {
     particleCount: 4000,
